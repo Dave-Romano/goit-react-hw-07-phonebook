@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { getFilter } from "../filter/filter-selectors";
 
-export const getContacts = (state) => state.contacts;
+export const getContacts = (state) => state.contacts.entities;
 // export const getFilteredContacts = (state) =>
 //   state.contacts.filter((contact) =>
 //     contact.name.toLowerCase().includes(state.filter.toLocaleLowerCase())

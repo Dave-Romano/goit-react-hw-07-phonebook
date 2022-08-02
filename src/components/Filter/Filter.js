@@ -1,5 +1,4 @@
 import { FilterStyled } from "./FilterStyled";
-
 import { useDispatch } from "react-redux";
 import { filterActions } from "../../redux/filter";
 

@@ -1,26 +1,40 @@
-import { createReducer } from "@reduxjs/toolkit";
-import * as actions from "./contacts-actions";
+import { createReducer, combineReducers } from "@reduxjs/toolkit";
+import {
+  getContacts,
+  postContacts,
+  deleteContact,
+} from "./contacts-operations";
 
-const INIT_STATE = localStorage.contacts
-  ? JSON.parse(localStorage.getItem("contacts"))
-  : [];
+const entities = createReducer([], {
+  [getContacts.fulfilled]: (_, action) => action.payload,
+  [postContacts.fulfilled]: (state, action) => [...state, action.payload],
+  [deleteContact.fulfilled]: (state, action) =>
+    state.filter((e) => e.id !== action.payload.id),
+});
 
-const createContact = (state, { payload }) => {
-  if (
-    state.find((el) => el.name === payload.name || el.number === payload.number)
-  )
-    return state;
-  const contacts = [...state, payload];
-  localStorage.setItem("contacts", JSON.stringify(contacts));
-  return contacts;
-};
-const removeContact = (state, { payload }) => {
-  const contacts = state.filter((el) => el.id !== payload);
-  localStorage.setItem("contacts", JSON.stringify(contacts));
-  return contacts;
-};
+const isLoading = createReducer(false, {
+  [getContacts.pending]: () => true,
+  [getContacts.fulfilled]: () => false,
+  [getContacts.rejected]: () => false,
+  [postContacts.pending]: () => true,
+  [postContacts.fulfilled]: () => false,
+  [postContacts.rejected]: () => false,
+  [deleteContact.pending]: () => true,
+  [deleteContact.fulfilled]: () => false,
+  [deleteContact.rejected]: () => false,
+});
 
-export const contactsReducer = createReducer(INIT_STATE, {
-  [actions.create]: createContact,
-  [actions.remove]: removeContact,
+const error = createReducer(null, {
+  [getContacts.rejected]: (_, action) => action.payload,
+  [getContacts.pending]: () => null,
+  [postContacts.rejected]: (_, action) => action.payload,
+  [postContacts.pending]: () => null,
+  [deleteContact.rejected]: (_, action) => action.payload,
+  [deleteContact.pending]: () => null,
+});
+
+export default combineReducers({
+  entities,
+  isLoading,
+  error,
 });
